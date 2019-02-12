@@ -1,0 +1,25 @@
+# This is the configuration used to check the rubocop source code.
+
+AllCops:
+  Exclude:
+    - spec/spec_helper.rb
+    - db/**/*
+    - docs/**/*
+    - config/**/*
+    - bin/**/*
+    - spec/**/**
+
+Documentation:
+  Enabled: false
+
+LineLength:
+  Max: 99
+
+HasAndBelongsToMany:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Metrics/BlockLength:
+  ExcludedMethods: ['register', 'describe', 'show', 'shared_examples', 'context', 'form', 'has_many', 'inputs']
