@@ -14,7 +14,7 @@ module Wor
       end
     end
 
-    protected
+    private
 
     def merge(response, rec, strategy)
       return rec.merge(response) { |_, v1, v2| v1 + v2 } if strategy == :add
