@@ -3,6 +3,7 @@ require_relative 'batchifier/interface'
 require_relative 'batchifier/strategy'
 require_relative 'batchifier/add'
 require_relative 'batchifier/no_response'
+require_relative 'batchifier/array_merge'
 require_relative 'batchifier/maintain_unique'
 
 module Wor
@@ -14,7 +15,7 @@ module Wor
     # => to be Hash. It can ignore them if the given strategy is no_response
     def execute_in_batches(collection, batch_size: 100, strategy: :add)
       strategy_class = classify_strategy(strategy)
-      collection.each_slice(batch_size).to_a.inject(strategy_class.new.base_case) do |rec, chunk|
+      collection.lazy.each_slice(batch_size).inject(strategy_class.new.base_case) do |rec, chunk|
         response = yield(chunk)
         merge(response, rec, strategy)
       end

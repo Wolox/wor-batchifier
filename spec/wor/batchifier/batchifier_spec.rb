@@ -109,6 +109,21 @@ describe Wor::Batchifier do
           expect { batchified_request }.to raise_error(Wor::Batchifier::Exceptions::StrategyNotFound)
         end
       end
+
+      context 'when array_merge strategy' do
+        let(:batchified_process) do
+          execute_in_batches(ids,batch_size: 10,
+                                 strategy: :array_merge) do |chunk|
+            chunk.map { |id| id + 10 }
+          end
+        end
+
+        let(:expected_response) { ids.map { |id| id + 10} }
+
+        it 'returns the expected result' do
+          expect(batchified_process).to eq(expected_response)
+        end
+      end
     end
   end
 end
