@@ -10,7 +10,7 @@ module Wor
 
     # This module exports the function execute_in_batches, that needs a collections and
     # => optionaly a batch_size and a merge strategy. It will slice the collection and
-    # => apply the chozen strategy to all chunks and merge the results. It expects the responses
+    # => apply the chosen strategy to all chunks and merge the results. It expects the responses
     # => to be Hash. It can ignore them if the given strategy is no_response
     def execute_in_batches(collection, batch_size: 100, strategy: :add)
       strategy_class = classify_strategy(strategy)
