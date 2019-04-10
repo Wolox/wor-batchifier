@@ -5,7 +5,7 @@
 [![Code Climate](https://codeclimate.com/github/Wolox/wor-batchifier/badges/gpa.svg)](https://codeclimate.com/github/Wolox/wor-authentication)
 [![Test Coverage](https://codeclimate.com/github/Wolox/wor-batchifier/badges/coverage.svg)](https://codeclimate.com/github/Wolox/wor-batchifier/coverage)
 
-Gem for batchifying your requests.
+Gem that allows you to easily divide requests that send a lot of information into several requests with smaller chunks of data, taking care of the response from each one and providing it joint together based on different strategies for parsing said response.
 
 ## Installation
 
@@ -25,10 +25,45 @@ Or install it yourself as:
 
 ## Usage
 
-### Basic configuration
+### Basic use:
 
+The first step is to define a parent controller from which all other controllers will have to extend to have access to the batchifier's methods. So, let's do that in our `ApplicationController.rb`:
 
+```ruby
+class ApplicationController < ActionController::Base
+  include Wor::Batchifier
+end
+```
 
+You can also include the batchifier just in the controllers you intend to use it in.
+
+The final step, is to find any request you wish to perform with smaller chunks of data and utilize the batchifier's methods to divide it into smaller tasks.
+
+For example, let's pretend we have an endpoint called bulk_request that communicates with a third API and sends a lot of information to be utilized.
+
+```ruby
+def bulk_request
+  ThirdAPI.bulk_request(params[:information])
+end
+```
+
+Now we will partition that request into chunks using the batchifier:
+
+```ruby
+def bulk_request
+  execute_in_batches(params[:information], batch_size: 100, strategy: :add) do |chunks|
+    ThirdAPI.bulk_request(chunks)
+  end
+end
+```
+
+The batchifier will take three parameters, the first one being the information that needs to be partitioned, then the batch_size we wish to utilize and finally the strategy that will be implemented on the response of each batch.
+
+### Available strategies
+
+- Add: For each request, it joins together each response no matter the result.
+- Maintain-Unique: It will only add the results that are not present already in the response.
+- No-Response: It will not provide any response whatsoever.
 
 ## Contributing
 
@@ -68,4 +103,3 @@ This project is maintained by [Diego Raffo](https://github.com/enanodr) along wi
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
-
