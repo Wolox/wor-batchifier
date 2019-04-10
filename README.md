@@ -57,13 +57,42 @@ def bulk_request
 end
 ```
 
-The batchifier will take three parameters, the first one being the information that needs to be partitioned, then the batch_size we wish to utilize and finally the strategy that will be implemented on the response of each batch.
+The batchifier will take three parameters, the first one being the information that needs to be partitioned, then the batch_size we wish to utilize and finally the symbol of the strategy that will be implemented on the response of each batch.
 
 ### Available strategies
 
 - Add: For each request, it joins together each response no matter the result.
 - Maintain-Unique: It will only add the results that are not present already in the response.
 - No-Response: It will not provide any response whatsoever.
+
+### Adding new strategies
+
+Should you desire to add new strategies, it's as simple as creating a new class and defining a method called `merge_strategy` which will hold the logic that will be implemented to parse the response. Let's look at an example:
+
+```ruby
+module Wor
+  module Batchifier
+    class MaintainUnique < Strategy
+      def merge_strategy(response,rec)
+        return response.merge(rec) { |_, v1, _| v1 }
+      end
+    end
+  end
+end
+```
+
+The `merge_strategy` will receive two parameters, the first being "response" which is the total response which will be returned from `execute_in_batches`, and "rec" is the recursive response from each batch that will be added to response in each iteration. If you want to merge or do something else entirely, you have the option to do so.
+
+All strategies have a `base_case` which by default is `{}` but if you wish to override it, you can define your own in your strategy by simply adding a method called `base_case` which should return the value you desire for your own personal case.
+
+```ruby
+def base_case
+ # Your base value for your batches.
+end
+```
+
+The new class that will hold the method `merge_strategy` should inherit the class `Strategy`. If the strategy doesn't define the method, an exception will be raised when trying to utilize it
+warning that it does not respect the contract set by the `Strategy` Interface.
 
 ## Contributing
 

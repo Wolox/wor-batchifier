@@ -1,6 +1,6 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
-include Wor::Batchifier
 
 describe Wor::Batchifier do
   describe 'execute_in_batches' do
@@ -30,7 +30,8 @@ describe Wor::Batchifier do
 
         let(:batchified_request) do
           execute_in_batches(ids, batch_size: 10) do |chunk|
-            resp = HTTParty.post('https://some_example_request.com', body: { ids: chunk })
+            resp = HTTParty.post('https://some_example_request.com',
+                                 body: { ids: chunk })
             JSON.parse resp.body
           end
         end
@@ -57,8 +58,10 @@ describe Wor::Batchifier do
           }
         end
         let(:batchified_request) do
-          execute_in_batches(ids, batch_size: 10, strategy: :maintain_unique) do |chunk|
-            resp = HTTParty.post('https://some_example_request.com', body: { ids: chunk })
+          execute_in_batches(ids, batch_size: 10,
+                                  strategy: :maintain_unique) do |chunk|
+            resp = HTTParty.post('https://some_example_request.com',
+                                 body: { ids: chunk })
             JSON.parse resp.body
           end
         end
@@ -75,8 +78,10 @@ describe Wor::Batchifier do
       context 'with no response strategy' do
         let(:expected_response) { {} }
         let(:batchified_request) do
-          execute_in_batches(ids, batch_size: 10, strategy: :no_response) do |chunk|
-            resp = HTTParty.post('https://some_example_request.com', body: { ids: chunk })
+          execute_in_batches(ids, batch_size: 10,
+                                  strategy: :no_response) do |chunk|
+            resp = HTTParty.post('https://some_example_request.com',
+                                 body: { ids: chunk })
             JSON.parse resp.body
           end
         end
@@ -90,16 +95,33 @@ describe Wor::Batchifier do
           expect(batchified_request).to eq(expected_response)
         end
       end
-      context 'with no wrong strategy' do
+      context 'with a inexistent strategy' do
         let(:batchified_request) do
-          execute_in_batches(ids, batch_size: 10, strategy: :wrong_strategy) do |chunk|
-            resp = HTTParty.post('https://some_example_request.com', body: { ids: chunk })
+          execute_in_batches(ids, batch_size: 10,
+                                  strategy: :inexistent_strategy) do |chunk|
+            resp = HTTParty.post('https://some_example_request.com',
+                                 body: { ids: chunk })
             JSON.parse resp.body
           end
         end
 
-        it 'raises wrong strategy exception' do
-          expect { batchified_request }.to raise_error(Wor::Batchifier::WrongStrategy)
+        it 'raises a StrategyNotFound exception' do
+          expect { batchified_request }.to raise_error(Wor::Batchifier::Exceptions::StrategyNotFound)
+        end
+      end
+
+      context 'when array_merge strategy' do
+        let(:batchified_process) do
+          execute_in_batches(ids,batch_size: 10,
+                                 strategy: :array_merge) do |chunk|
+            chunk.map { |id| id + 10 }
+          end
+        end
+
+        let(:expected_response) { ids.map { |id| id + 10} }
+
+        it 'returns the expected result' do
+          expect(batchified_process).to eq(expected_response)
         end
       end
     end
