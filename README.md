@@ -81,7 +81,7 @@ module Wor
 end
 ```
 
-The `merge_strategy` will receive two parameters, the first being "response" which is the total response which will be returned from `execute_in_batches`, and "rec" is the recursive response from each batch that will be added to response in each iteration. If you want to merge or do something else entirely, is your choice completely.
+The `merge_strategy` will receive two parameters, the first being "response" which is the total response which will be returned from `execute_in_batches`, and "rec" is the recursive response from each batch that will be added to response in each iteration. If you want to merge or do something else entirely, you have the option to do so.
 
 All strategies have a `base_case` which by default is `{}` but if you wish to override it, you can define your own in your strategy by simply adding a method called `base_case` which should return the value you desire for your own personal case.
 

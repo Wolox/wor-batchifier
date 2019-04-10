@@ -21,7 +21,7 @@ module Wor
       end
     end
 
-    protected
+    private
 
     def merge(response, rec, strategy)
       return Wor::Batchifier.classify_strategy(strategy).new.merge_strategy(response,rec)
