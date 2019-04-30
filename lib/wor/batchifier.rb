@@ -27,8 +27,8 @@ module Wor
     end
 
     def classify_strategy(strategy)
-      strategy_class_name = 'Wor::Batchifier::' + strategy.to_s.split('_').collect(&:capitalize).join
-      Kernel.const_get(strategy_class_name)
+      strategy_class_name = strategy.to_s.split('_').collect(&:capitalize).join
+      Kernel.const_get("Wor::Batchifier::#{strategy_class_name}")
     rescue NameError => e
       raise Wor::Batchifier::Exceptions::StrategyNotFound
     end
