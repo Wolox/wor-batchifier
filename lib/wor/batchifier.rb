@@ -1,5 +1,4 @@
 require_relative 'batchifier/exceptions'
-require_relative 'batchifier/interface'
 require_relative 'batchifier/strategy'
 require_relative 'batchifier/add'
 require_relative 'batchifier/no_response'
@@ -24,11 +23,11 @@ module Wor
     private
 
     def merge(response, rec, strategy)
-      return Wor::Batchifier.classify_strategy(strategy).new.merge_strategy(response,rec)
+      return classify_strategy(strategy).new.merge_strategy(response,rec)
     end
 
     def classify_strategy(strategy)
-      strategy_class_name = strategy.to_s.split('_').collect(&:capitalize).join
+      strategy_class_name = 'Wor::Batchifier::' + strategy.to_s.split('_').collect(&:capitalize).join
       Kernel.const_get(strategy_class_name)
     rescue NameError => e
       raise Wor::Batchifier::Exceptions::StrategyNotFound

@@ -1,17 +1,9 @@
 module Wor
   module Batchifier
     class Strategy
-      extend Wor::Batchifier::Interface
 
-      implements :merge_strategy
-
-      class << self
-        alias_method :__new__, :new
-
-        def new(*args)
-          raise Wor::Batchifier::Exceptions::InterfaceNotImplemented.new "class #{name} does not implement contract #{contract}!" if breaches_contract?
-          __new__(*args)
-        end
+      def merge_strategy
+        raise Wor::Batchifier::Exceptions::InterfaceNotImplemented.new "Class #{self.class.name} does not implement contract merge_strategy!"
       end
 
       def base_case
