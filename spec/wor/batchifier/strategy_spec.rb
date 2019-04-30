@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-include Wor::Batchifier::Interface
 
 describe Wor::Batchifier::Strategy do
   context 'when creating a invalid strategy' do
