@@ -12,15 +12,21 @@ module Wor
     # => optionaly a batch_size and a merge strategy. It will slice the collection and
     # => apply the chozen strategy to all chunks and merge the results. It expects the responses
     # => to be Hash. It can ignore them if the given strategy is no_response
-    def execute_in_batches(collection, batch_size: 100, strategy: :add)
+    def execute_in_batches(collection, batch_size: 100, strategy: :add, &block)
       strategy_class = classify_strategy(strategy)
       collection.lazy.each_slice(batch_size).inject(strategy_class.new.base_case) do |rec, chunk|
-        response = yield(chunk)
+        response = batch_process(chunk, &block)
         merge(response, rec, strategy)
       end
     end
 
     private
+
+    def batch_process(chunk)
+      yield chunk
+    rescue StandardError => e
+      raise Wor::Batchifier::Exceptions::ProcessingError
+    end
 
     def merge(response, rec, strategy)
       return classify_strategy(strategy).new.merge_strategy(response,rec)

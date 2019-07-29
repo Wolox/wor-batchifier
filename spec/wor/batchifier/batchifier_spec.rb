@@ -124,6 +124,19 @@ describe Wor::Batchifier do
           expect(batchified_process).to eq(expected_response)
         end
       end
+
+      context 'when an error occurs while processing' do
+        let(:batchified_process) do
+          execute_in_batches(ids,batch_size: 10,
+                                 strategy: :array_merge) do |chunk|
+            chunk.map { |id| id / 0 }
+          end
+        end
+
+        it 'raises a ProcessingError exception' do
+          expect { batchified_process }.to raise_error(Wor::Batchifier::Exceptions::ProcessingError)
+        end
+      end
     end
   end
 end
