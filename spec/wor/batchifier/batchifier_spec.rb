@@ -133,8 +133,23 @@ describe Wor::Batchifier do
           end
         end
 
-        it 'raises a ProcessingError exception' do
-          expect { batchified_process }.to raise_error(Wor::Batchifier::Exceptions::ProcessingError)
+        it 'raises a CustomStrategyMergingError exception' do
+          expect { batchified_process }.to raise_error(
+            Wor::Batchifier::Exceptions::CustomStrategyMergingError
+          )
+        end
+      end
+
+      context 'when no errors occur while processing' do
+        let(:batchified_process) do
+          execute_in_batches(ids,batch_size: 10,
+                                 strategy: :array_merge) do |chunk|
+            chunk.map { |id| id > 10 }
+          end
+        end
+
+        it 'no exceptions are raised' do
+          expect { batchified_process }.not_to raise_error
         end
       end
     end

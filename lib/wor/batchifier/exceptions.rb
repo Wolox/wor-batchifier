@@ -5,7 +5,7 @@ module Wor
       class ExistingStrategy < StandardError; end
       class InterfaceNotImplemented < StandardError; end
       class StrategyNotFound < StandardError; end
-      class ProcessingError < StandardError; end
+      class CustomStrategyMergingError < StandardError; end
     end
   end
 end
