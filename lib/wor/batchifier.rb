@@ -15,19 +15,20 @@ module Wor
     def execute_in_batches(collection, batch_size: 100, strategy: :add, &block)
       strategy_class = classify_strategy(strategy)
       collection.lazy.each_slice(batch_size).inject(strategy_class.new.base_case) do |rec, chunk|
-        response = batch_process(chunk, &block) if block_given?
+        response = batch_process(chunk, strategy, &block) if block_given?
         merge(response, rec, strategy)
       end
     end
 
     private
 
-    def batch_process(chunk)
+    def batch_process(chunk, strategy)
       yield chunk
     rescue StandardError => e
-      puts "Backtrace:\n\t#{e.backtrace.join("\n\t")}"
-      raise Wor::Batchifier::Exceptions::CustomStrategyMergingError,
-        "Custom strategy could not be merged"
+      logger.error "Custom Merge Strategy from #{classify_strategy(strategy).name} \
+                    raised #{e.class.name} during execution."
+      e.backtrace.each { |line| logger.error line }
+      raise Wor::Batchifier::Exceptions::CustomStrategyMergingError
     end
 
     def merge(response, rec, strategy)
@@ -39,6 +40,10 @@ module Wor
       Kernel.const_get("Wor::Batchifier::#{strategy_class_name}")
     rescue NameError => e
       raise Wor::Batchifier::Exceptions::StrategyNotFound
+    end
+
+    def logger
+      @logger ||= Logger.new(STDOUT)
     end
   end
 end
