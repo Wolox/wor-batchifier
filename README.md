@@ -27,7 +27,15 @@ Or install it yourself as:
 
 ### Basic use:
 
-The first step is to define a parent controller from which all other controllers will have to extend to have access to the batchifier's methods. So, let's do that in our `ApplicationController.rb`:
+The first step is to include the Wor::Batchifier in the Class or Module you intend to use it:
+
+```ruby
+class MyClass
+  include Wor::Batchifier
+end
+```
+
+If you're going to use the gem in your controllers, a good practice would be to define a parent controller from which all other controllers will have to extend to have access to the batchifier's methods. So, let's do that in our `ApplicationController.rb`:
 
 ```ruby
 class ApplicationController < ActionController::Base
@@ -35,9 +43,9 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-You can also include the batchifier just in the controllers you intend to use it in.
+You could also include the batchifier just in the controllers you intend to use it in.
 
-The final step, is to find any request you wish to perform with smaller chunks of data and utilize the batchifier's methods to divide it into smaller tasks.
+The final step, is to find any request or process you wish to perform with smaller chunks of data and utilize the batchifier's methods to divide it into smaller tasks.
 
 For example, let's pretend we have an endpoint called bulk_request that communicates with a third API and sends a lot of information to be utilized.
 
@@ -47,7 +55,7 @@ def bulk_request
 end
 ```
 
-Now we will partition that request into chunks using the batchifier:
+Now we will partition that request into chunks using the batchifier as to not overburden the ThirdAPI:
 
 ```ruby
 def bulk_request
@@ -67,7 +75,7 @@ The batchifier will take three parameters, the first one being the information t
 
 ### Adding new strategies
 
-Should you desire to add new strategies, it's as simple as creating a new class and defining a method called `merge_strategy` which will hold the logic that will be implemented to parse the response. Let's look at an example:
+Should you desire to add new strategies, it's as simple as creating a new class and defining a method called `merge_strategy` which will hold the logic that will be implemented to parse and merge the results from each batch. Let's look at an example:
 
 ```ruby
 module Wor
@@ -83,11 +91,11 @@ end
 
 The `merge_strategy` will receive two parameters, the first being "response" which is the total response which will be returned from `execute_in_batches`, and "rec" is the recursive response from each batch that will be added to response in each iteration. If you want to merge or do something else entirely, you have the option to do so.
 
-All strategies have a `base_case` which by default is `{}` but if you wish to override it, you can define your own in your strategy by simply adding a method called `base_case` which should return the value you desire for your own personal case.
+All strategies have a `base_case` which by default is an empty hash `{}` but if you wish to override it, you can define your own in your strategy by simply adding a method called `base_case` which should return the value you desire for your own personal needs.
 
 ```ruby
 def base_case
- # Your base value for your batches.
+ # An initial step or value where the responses will be merged to.
 end
 ```
 
