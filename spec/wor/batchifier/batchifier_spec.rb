@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-using Wor::Batchifier
 
 describe Wor::Batchifier do
   describe 'execute_in_batches' do

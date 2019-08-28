@@ -4,7 +4,9 @@ require_relative 'batchifier/add'
 require_relative 'batchifier/no_response'
 require_relative 'batchifier/array_merge'
 require_relative 'batchifier/maintain_unique'
-require_relative 'batchifier/merge_params'
+require_relative 'batchifier/merge_params/object'
+require_relative 'batchifier/merge_params/symbol'
+require_relative 'batchifier/merge_params/proc'
 
 module Wor
   module Batchifier

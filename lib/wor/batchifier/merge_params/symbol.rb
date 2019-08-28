@@ -1,26 +1,6 @@
 module Wor
   module Batchifier
     module MergeParams
-      refine Object do
-        def merge_method
-          raise Wor::Batchifier::Exceptions::InvalidStrategyType
-        end
-
-        def merge_base_case
-          raise Wor::Batchifier::Exceptions::InvalidStrategyType
-        end
-      end
-
-      refine Proc do
-        def merge_method
-          self
-        end
-
-        def merge_base_case
-          {}
-        end
-      end
-
       refine Symbol do
         def merge_method
           classify_strategy.new.method(:merge_strategy)
