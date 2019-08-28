@@ -94,6 +94,19 @@ end
 The new class that will hold the method `merge_strategy` should inherit the class `Strategy`. If the strategy doesn't define the method, an exception will be raised when trying to utilize it
 warning that it does not respect the contract set by the `Strategy` Interface.
 
+You can also define a merge strategy via `Proc`, without the need of creating a new class. The `Proc` should receive two parameters: the first being "response" and the second one being "rec", both of which work the same way as they do when you create a class and define its `merge strategy`. All `Procs` have `{}` as their base case which cannot be changed. Let's look at an example:
+
+```ruby
+merge_strategy = Proc.new do |response, rec|
+  rec = [] if rec.empty?
+  rec + response
+end
+
+execute_in_batches(collection, batch_size: 10, strategy: merge_strategy) do |chunk|
+  ...
+end
+```
+
 ## Contributing
 
 1. Fork it
