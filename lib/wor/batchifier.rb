@@ -16,16 +16,16 @@ module Wor
     # => apply the chozen strategy to all chunks and merge the results. It expects the responses
     # => to be Hash. It can ignore them if the given strategy is no_response
     def execute_in_batches(collection, batch_size: 100, strategy: :add)
-      collection.lazy.each_slice(batch_size).inject(strategy.merge_base_case) do |rec, chunk|
+      collection.lazy.each_slice(batch_size).inject(strategy.merge_base_case) do |memo, chunk|
         response = yield(chunk)
-        merge(strategy.merge_method, response, rec)
+        merge(strategy.merge_method, response, memo)
       end
     end
 
     private
 
-    def merge(merge_method, response, rec)
-      merge_method.call(response,rec)
+    def merge(merge_method, response, memo)
+      merge_method.call(response, memo)
     end
   end
 end
