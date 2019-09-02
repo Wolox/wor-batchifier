@@ -5,7 +5,7 @@
 [![Code Climate](https://codeclimate.com/github/Wolox/wor-batchifier/badges/gpa.svg)](https://codeclimate.com/github/Wolox/wor-authentication)
 [![Test Coverage](https://codeclimate.com/github/Wolox/wor-batchifier/badges/coverage.svg)](https://codeclimate.com/github/Wolox/wor-batchifier/coverage)
 
-Gem that allows you to easily divide requests that send a lot of information into several requests with smaller chunks of data, taking care of the response from each one and providing it joint together based on different strategies for parsing said response.
+Gem that allows you to easily divide processing or requests that work with a lot of information into several batches with smaller chunks of data, taking care of the result from each one and providing it joint together based on different strategies for parsing said response.
 
 ## Installation
 
@@ -81,15 +81,15 @@ Should you desire to add new strategies, it's as simple as creating a new class 
 module Wor
   module Batchifier
     class MaintainUnique < Strategy
-      def merge_strategy(response,rec)
-        return response.merge(rec) { |_, v1, _| v1 }
+      def merge_strategy(response,memo)
+        return response.merge(memo) { |_, v1, _| v1 }
       end
     end
   end
 end
 ```
 
-The `merge_strategy` will receive two parameters, the first being "response" which is the total response which will be returned from `execute_in_batches`, and "rec" is the recursive response from each batch that will be added to response in each iteration. If you want to merge or do something else entirely, you have the option to do so.
+The `merge_strategy` will receive two parameters, the first being "response" which is the total response which will be returned from `execute_in_batches`, and "memo" is the recursive response from each batch that will be added to response in each iteration. If you want to merge or do something else entirely, you have the option to do so.
 
 All strategies have a `base_case` which by default is an empty hash `{}` but if you wish to override it, you can define your own in your strategy by simply adding a method called `base_case` which should return the value you desire for your own personal needs.
 
@@ -101,6 +101,19 @@ end
 
 The new class that will hold the method `merge_strategy` should inherit the class `Strategy`. If the strategy doesn't define the method, an exception will be raised when trying to utilize it
 warning that it does not respect the contract set by the `Strategy` Interface.
+
+You can also define a merge strategy via `Proc`, without the need of creating a new class. The `Proc` should receive two parameters: the first being "response" and the second one being "memo", both of which work the same way as they do when you create a class and define its `merge strategy`. All `Procs` have `{}` as their base case which cannot be changed. Let's look at an example:
+
+```ruby
+merge_strategy = Proc.new do |response, memo|
+  memo = [] if memo.empty?
+  memo + response
+end
+
+execute_in_batches(collection, batch_size: 10, strategy: merge_strategy) do |chunk|
+  ...
+end
+```
 
 ## Contributing
 

@@ -4,33 +4,28 @@ require_relative 'batchifier/add'
 require_relative 'batchifier/no_response'
 require_relative 'batchifier/array_merge'
 require_relative 'batchifier/maintain_unique'
+require_relative 'batchifier/merge_params/object'
+require_relative 'batchifier/merge_params/symbol'
+require_relative 'batchifier/merge_params/proc'
 
 module Wor
   module Batchifier
-
+    using MergeParams
     # This module exports the function execute_in_batches, that needs a collections and
     # => optionaly a batch_size and a merge strategy. It will slice the collection and
     # => apply the chozen strategy to all chunks and merge the results. It expects the responses
     # => to be Hash. It can ignore them if the given strategy is no_response
     def execute_in_batches(collection, batch_size: 100, strategy: :add)
-      strategy_class = classify_strategy(strategy)
-      collection.lazy.each_slice(batch_size).inject(strategy_class.new.base_case) do |rec, chunk|
+      collection.lazy.each_slice(batch_size).inject(strategy.merge_base_case) do |memo, chunk|
         response = yield(chunk)
-        merge(response, rec, strategy)
+        merge(strategy.merge_method, response, memo)
       end
     end
 
     private
 
-    def merge(response, rec, strategy)
-      return classify_strategy(strategy).new.merge_strategy(response,rec)
-    end
-
-    def classify_strategy(strategy)
-      strategy_class_name = strategy.to_s.split('_').collect(&:capitalize).join
-      Kernel.const_get("Wor::Batchifier::#{strategy_class_name}")
-    rescue NameError => e
-      raise Wor::Batchifier::Exceptions::StrategyNotFound
+    def merge(merge_method, response, memo)
+      merge_method.call(response, memo)
     end
   end
 end

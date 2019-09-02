@@ -124,6 +124,43 @@ describe Wor::Batchifier do
           expect(batchified_process).to eq(expected_response)
         end
       end
+
+      context 'when strategy is sent by block' do
+        let(:array_merge_proc) {
+          Proc.new do |response, rec|
+            rec = [] if rec.empty?
+            rec + response
+          end
+        }
+
+        let(:batchified_process) do
+          execute_in_batches(ids, batch_size: 10,
+                                  strategy: array_merge_proc) do |chunk|
+            chunk.map { |id| id + 10 }
+          end
+        end
+
+        let(:expected_response) { ids.map { |id| id + 10 } }
+
+        it 'returns the expected result' do
+          expect(batchified_process).to eq(expected_response)
+        end
+      end
+
+      context 'when strategy param is not a symbol or a proc' do
+        let(:no_response_string) { 'no_response' }
+
+        let(:batchified_process) do
+          execute_in_batches(ids,batch_size: 10,
+                                 strategy: no_response_string) do |chunk|
+            chunk.map { |id| id + 10 }
+          end
+        end
+
+        it 'raises a InvalidStrategyType exception' do
+          expect { batchified_process }.to raise_error(Wor::Batchifier::Exceptions::InvalidStrategyType)
+        end
+      end
     end
   end
 end
