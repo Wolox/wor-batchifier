@@ -5,7 +5,7 @@
 [![Code Climate](https://codeclimate.com/github/Wolox/wor-batchifier/badges/gpa.svg)](https://codeclimate.com/github/Wolox/wor-authentication)
 [![Test Coverage](https://codeclimate.com/github/Wolox/wor-batchifier/badges/coverage.svg)](https://codeclimate.com/github/Wolox/wor-batchifier/coverage)
 
-Gem that allows you to easily divide requests that send a lot of information into several requests with smaller chunks of data, taking care of the response from each one and providing it joint together based on different strategies for parsing said response.
+Gem that allows you to easily divide processing or requests that work with a lot of information into several batches with smaller chunks of data, taking care of the result from each one and providing it joint together based on different strategies for parsing said response.
 
 ## Installation
 
