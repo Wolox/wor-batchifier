@@ -127,7 +127,12 @@ end
 
 ## About ##
 
-This project is maintained by [Diego Raffo](https://github.com/enanodr) along with [Pedro Jara](https://github.com/redwarewolf) and it was written by [Wolox](http://www.wolox.com.ar).
+This project was developed by [Pedro Jara](https://github.com/redwarewolf) along with [Diego Raffo](https://github.com/enanodr) at [Wolox](http://www.wolox.com.ar).
+
+Maintainers: [Pedro Jara](https://github.com/redwarewolf), [Federico Volonnino](https://github.com/fvolonnino)
+
+Contributors: [Pedro Jara](https://github.com/redwarewolf), [Federico Volonnino](https://github.com/fvolonnino)
+
 ![Wolox](https://raw.githubusercontent.com/Wolox/press-kit/master/logos/logo_banner.png)
 
 ## License
